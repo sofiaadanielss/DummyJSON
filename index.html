@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Mi panel con DummyJSON</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Mi panel con DummyJSON</h1>
     <h2>Click para iniciar sesion</h2>
 
-    <button type="submit">Login</button>
+    <form id="login-form">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"/><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"/><br>
+        <button type="submit" id="login-btn">Login</button>
+    </form>
+
+    <p id="message" role="alert" style="color: #c0392b;"></p>
+    
     <script src="script.js"></script>
 </body>
 </html>

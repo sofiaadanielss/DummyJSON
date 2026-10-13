@@ -22,14 +22,13 @@ async function loginEmily(){
 
     const data = await res.json();
     console.log(data);
-    loadProfile();
-    if (!res.ok) throw new Error(data.message || 'Usuario o password incorrectos.');
     
+    if (!res.ok) throw new Error(data.message || 'Usuario o password incorrectos.');
 }
 
 function showLogin(errorText = '') {
     profileSection.hidden = true;
-    loginSection.hidden = false;
+    form.hidden = false;
     message.style.color = '#c0392b';
     message.textContent = errorText;
 }
@@ -41,7 +40,7 @@ function showProfile(user) {
     document.getElementById('profile-phone').textContent = user.phone;
     document.getElementById('profile-city').textContent = user.address?.city ?? '—';
 
-    loginSection.hidden = true;
+    form.hidden = true;
     profileSection.hidden = false;
 }
 
@@ -68,7 +67,7 @@ async function loadProfile() {
             showLogin('No se pudo cargar el perfil.');
             return;
         }
-        console.log(respuesta);
+        
         showProfile(await respuesta.json());
     } catch (error) {
         showLogin('No se pudo conectar con el servidor.');

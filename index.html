@@ -10,16 +10,32 @@
     <h1>Mi panel con DummyJSON</h1>
     <h2>Click para iniciar sesion</h2>
 
-    <form id="login-form">
+    <form id="loginSection">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username"/><br>
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password"/><br>
-        <button type="submit" id="login-btn">Login</button>
+        <button type="submit" id="loginBtn">Login</button>
     </form>
 
     <p id="message" role="alert" style="color: #c0392b;"></p>
     
+    <section id="profileSection" hidden>
+        <h2>Mi perfil</h2>
+        <h3 id="profile-name"></h3>
+ 
+        <ul>
+            <li><strong>Correo:</strong> <span id="profile-email"></span></li>
+            <li><strong>Usuario:</strong> <span id="profile-username"></span></li>
+            <li><strong>Numero:</strong> <span id="profile-phone"></span></li>
+            <li><strong>Ciudad:</strong> <span id="profile-city"></span></li>
+        </ul>
+ 
+        <button type="button" id="logoutBtn">Cerrar sesion</button>
+    </section>
+ 
+
+
     <script src="script.js"></script>
 </body>
 </html>

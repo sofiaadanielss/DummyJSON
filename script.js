@@ -24,6 +24,8 @@ async function loginEmily(){
     console.log(data);
     
     if (!res.ok) throw new Error(data.message || 'Usuario o password incorrectos.');
+    
+    localStorage.setItem(TOKEN_KEY, data.accessToken);
 }
 
 function showLogin(errorText = '') {
@@ -34,6 +36,7 @@ function showLogin(errorText = '') {
 }
 
 function showProfile(user) {
+    document.getElementById('profile-image').src = user.image;
     document.getElementById('profile-name').textContent = `${user.firstName} ${user.lastName}`;
     document.getElementById('profile-email').textContent = user.email;
     document.getElementById('profile-username').textContent = user.username;
@@ -78,7 +81,7 @@ form.addEventListener('submit', async (event) => {
     event.preventDefault();
     message.textContent = '';
     button.disabled = true;
-    button.textContent = 'Entrando';
+    button.textContent = 'Entrando...';
 
     try {
         await loginEmily();

@@ -33,6 +33,13 @@
         </ul>
 
         <h2>Mis tareas</h2> <!--Listar las tareas del usuario -->
+        
+        <form id="todoForm">
+            <input type="text" id="todoInput" placeholder="Nueva tarea...">
+            <button type="submit">Agregar</button>
+        </form>
+
+        <ul id="todoList"></ul>
 
         <div class="stats-container">
             <div class="stat-card">Total: <span id="stat-total">0</span></div>
@@ -40,6 +47,7 @@
             <div class="stat-card">Pendientes: <span id="stat-pending">0</span></div>
             <div class="stat-card">Porcentaje: <span id="stat-percentage">0</span>%</div>
         </div><br>
+
         <select id="todoFilter">
             <option value="all">Todas</option>
             <option value="pending">Pendientes</option>

@@ -6,9 +6,67 @@ const button = document.getElementById('loginBtn');
 const message = document.getElementById('message');
 const logoutBtn = document.getElementById('logoutBtn');
 const profileSection = document.getElementById('profileSection');
+const JSON_HEADERS = { 'Content-Type': 'application/json' };
 // variables
 let currentUserId = null;
 let todos = [];
+// agregar al todo
+async function addTodo(text) {
+    message.textContent = '';
+    try {
+        const res = await fetch(`${API_URL}/todos/add`, {
+            method: 'POST',
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ todo: text, completed: false, userId: currentUserId })
+        });
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+        todos = [{ ...data, id: Date.now(), local: true }, ...todos];
+        renderTodos();
+    } catch (error) {
+        message.textContent = 'No se pudo agregar la tarea.';
+    }
+}
+// borrar del todo
+async function deleteTodo(id) {
+    message.textContent = '';
+    const task = todos.find((t) => t.id === id);
+    if (!task) return;
+
+    try {
+        if (!task.local) {
+            const res = await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error();
+        }
+        todos = todos.filter((t) => t.id !== id);
+        renderTodos();
+    } catch (error) {
+        message.textContent = 'No se pudo eliminar la tarea.';
+    }
+}
+// marcar completada / pendiente
+async function toggleTodo(id) {
+    message.textContent = '';
+    const task = todos.find((t) => t.id === id);
+    if (!task) return;
+
+    const newState = !task.completed;
+    try {
+        if (!task.local) {
+            const res = await fetch(`${API_URL}/todos/${id}`, {
+                method: 'PUT',
+                headers: JSON_HEADERS,
+                body: JSON.stringify({ completed: newState })
+            });
+            if (!res.ok) throw new Error();
+        }
+        todos = todos.map((t) => (t.id === id ? { ...t, completed: newState } : t));
+    } catch (error) {
+        message.textContent = 'No se pudo actualizar la tarea.';
+    }
+    renderTodos();
+}
 // carga ToDo list del user
 async function loadTodos() {
     try {
@@ -49,9 +107,22 @@ function renderTodos() {
 
     visibles.forEach((task) => {
         const li = document.createElement('li');
-        li.textContent = task.todo;
-        if (task.completed) li.style.textDecoration = 'line-through';
 
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.addEventListener('change', () => toggleTodo(task.id));
+
+        const span = document.createElement('span');
+        span.textContent = task.todo;
+        if (task.completed) span.style.textDecoration = 'line-through';
+
+        const borrar = document.createElement('button');
+        borrar.type = 'button';
+        borrar.textContent = 'Eliminar';
+        borrar.addEventListener('click', () => deleteTodo(task.id));
+
+        li.append(checkbox, span, borrar);
         lista.appendChild(li);
     });
 }
@@ -166,5 +237,14 @@ logoutBtn.addEventListener('click', () => {
 
 document.getElementById('todoFilter').addEventListener('change', renderTodos);
 document.getElementById('todoSearch').addEventListener('input', renderTodos);
+document.getElementById('todoForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const input = document.getElementById('todoInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    await addTodo(text);
+    input.value = '';
+});
 
 loadProfile();

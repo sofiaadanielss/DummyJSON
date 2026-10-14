@@ -10,6 +10,12 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 // variables
 let currentUserId = null;
 let todos = [];
+
+function saveTodos() {
+    try {
+        localStorage.setItem(`todos_${currentUserId}`, JSON.stringify(todos));
+    } catch (error) {}
+}
 // agregar al todo
 async function addTodo(text) {
     message.textContent = '';
@@ -23,6 +29,7 @@ async function addTodo(text) {
 
         const data = await res.json();
         todos = [{ ...data, id: Date.now(), local: true }, ...todos];
+        saveTodos();
         renderTodos();
     } catch (error) {
         message.textContent = 'No se pudo agregar la tarea.';
@@ -40,6 +47,7 @@ async function deleteTodo(id) {
             if (!res.ok) throw new Error();
         }
         todos = todos.filter((t) => t.id !== id);
+        saveTodos();
         renderTodos();
     } catch (error) {
         message.textContent = 'No se pudo eliminar la tarea.';
@@ -62,6 +70,7 @@ async function toggleTodo(id) {
             if (!res.ok) throw new Error();
         }
         todos = todos.map((t) => (t.id === id ? { ...t, completed: newState } : t));
+        saveTodos();
     } catch (error) {
         message.textContent = 'No se pudo actualizar la tarea.';
     }
@@ -69,6 +78,12 @@ async function toggleTodo(id) {
 }
 // carga ToDo list del user
 async function loadTodos() {
+    const saved = localStorage.getItem(`todos_${currentUserId}`);
+    if (saved) {
+        todos = JSON.parse(saved);
+        renderTodos();
+        return;
+    }
     try {
         const token = localStorage.getItem('accessToken');
         const res = await fetch(`${API_URL}/todos/user/${currentUserId}`, {
@@ -79,6 +94,7 @@ async function loadTodos() {
 
         const data = await res.json();
         todos = data.todos;
+        localStorage.setItem(`todos_${currentUserId}`, JSON.stringify(todos));
         renderTodos();
     } catch (error) {
         message.textContent = 'No se pudieron cargar las tareas.';

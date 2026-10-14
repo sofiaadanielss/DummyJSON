@@ -7,6 +7,46 @@ const message = document.getElementById('message');
 const logoutBtn = document.getElementById('logoutBtn');
 const profileSection = document.getElementById('profileSection');
 let currentUserId = null;
+let todos = [];
+
+async function loadTodos() {
+    try {
+        const token = localStorage.getItem(TOKEN_KEY);
+        const res = await fetch(`${API_URL}/todos/user/${currentUserId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+        todos = data.todos;
+    } catch (error) {
+        message.textContent = 'No se pudieron cargar las tareas.';
+    }
+}
+
+function renderTodos() {
+    const lista = document.getElementById('todoList');
+    lista.innerHTML = '';
+
+    if (todos.length === 0) {
+        lista.textContent = 'No hay tareas.';
+        return;
+    }  
+    
+    todos.forEach((task) => {
+        const li = document.createElement('li');
+        li.textContent = task.task;
+        if (task.completed) li.style.textDecoration = 'line-through';
+        lista.appendChild(li);
+    });
+}
+
+function renderList(){
+    const total = todos.length;
+
+    document.getElementById('stat-total').textContent = total;
+}
 
 async function loginEmily(){
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -46,6 +86,7 @@ function showProfile(user) {
 
     form.hidden = true;
     profileSection.hidden = false;
+    loadTodos();
 }
 
 async function loadProfile() {

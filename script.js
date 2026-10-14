@@ -13,7 +13,7 @@ let todos = [];
 async function loadTodos() {
     try {
         const token = localStorage.getItem('accessToken');
-        const res = await fetch(`${API_URL}/todos`, {
+        const res = await fetch(`${API_URL}/todos/user/${currentUserId}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -21,27 +21,51 @@ async function loadTodos() {
 
         const data = await res.json();
         todos = data.todos;
+        renderTodos();
     } catch (error) {
         message.textContent = 'No se pudieron cargar las tareas.';
     }
 }
 // revisar toDo
 function renderTodos() {
+    renderStats();
+    
+    const filtro = document.getElementById('todoFilter').value;
+    const texto = document.getElementById('todoSearch').value.trim().toLowerCase();
+
+    const visibles = todos.filter((task) => {
+        if (filtro === 'pending' && task.completed) return false;
+        if (filtro === 'completed' && !task.completed) return false;
+        return task.todo.toLowerCase().includes(texto);
+    });
+
     const lista = document.getElementById('todoList');
     lista.innerHTML = '';
 
-    if (todos.length === 0) {
+    if (visibles.length === 0) {
         lista.textContent = 'No hay tareas.';
         return;
     }  
-    
-    todos.forEach((task) => {
+
+    visibles.forEach((task) => {
         const li = document.createElement('li');
-        li.textContent = task.task;
+        li.textContent = task.todo;
         if (task.completed) li.style.textDecoration = 'line-through';
 
         lista.appendChild(li);
     });
+}
+// stats del todo list
+function renderStats() {
+    const total = todos.length;
+    const completed = todos.filter((t) => t.completed).length;
+    const pending = total - completed;
+    const percentage = (completed / total) * 100;
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-completed').textContent = completed;
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('stat-percentage').textContent = percentage;
 }
 // login con las credenciales de emilys
 async function loginEmily(){
@@ -139,5 +163,8 @@ logoutBtn.addEventListener('click', () => {
     currentUserId = null;
     showLogin();
 });
+
+document.getElementById('todoFilter').addEventListener('change', renderTodos);
+document.getElementById('todoSearch').addEventListener('input', renderTodos);
 
 loadProfile();

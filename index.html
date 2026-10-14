@@ -32,16 +32,23 @@
             <li><strong>Ciudad:</strong> <span id="profile-city"></span></li>
         </ul>
 
-        <h2>Mis tareas</h2>
+        <h2>Mis tareas</h2> <!--Listar las tareas del usuario -->
 
         <div class="stats-container">
             <div class="stat-card">Total: <span id="stat-total">0</span></div>
             <div class="stat-card">Completadas: <span id="stat-completed">0</span></div>
             <div class="stat-card">Pendientes: <span id="stat-pending">0</span></div>
-        </div>
-
+            <div class="stat-card">Porcentaje: <span id="stat-percentage">0</span>%</div>
+        </div><br>
+        <select id="todoFilter">
+            <option value="all">Todas</option>
+            <option value="pending">Pendientes</option>
+            <option value="completed">Completadas</option>
+        </select>
+        <input type="text" id="todoSearch" placeholder="Buscar tarea...">
+        
         <ul id="todoList"></ul>
- 
+        
         <button type="button" id="logoutBtn">Cerrar sesion</button>
     </section>
  

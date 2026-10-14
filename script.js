@@ -1,18 +1,19 @@
+//api dummy json
 const API_URL = 'https://dummyjson.com';
-const TOKEN_KEY = 'accessToken';
-
+// identificadores del doc  
 const form = document.getElementById('loginSection');
 const button = document.getElementById('loginBtn');
 const message = document.getElementById('message');
 const logoutBtn = document.getElementById('logoutBtn');
 const profileSection = document.getElementById('profileSection');
+// variables
 let currentUserId = null;
 let todos = [];
-
+// carga ToDo list del user
 async function loadTodos() {
     try {
-        const token = localStorage.getItem(TOKEN_KEY);
-        const res = await fetch(`${API_URL}/todos/user/${currentUserId}`, {
+        const token = localStorage.getItem('accessToken');
+        const res = await fetch(`${API_URL}/todos`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -24,7 +25,7 @@ async function loadTodos() {
         message.textContent = 'No se pudieron cargar las tareas.';
     }
 }
-
+// revisar toDo
 function renderTodos() {
     const lista = document.getElementById('todoList');
     lista.innerHTML = '';
@@ -38,16 +39,11 @@ function renderTodos() {
         const li = document.createElement('li');
         li.textContent = task.task;
         if (task.completed) li.style.textDecoration = 'line-through';
+
         lista.appendChild(li);
     });
 }
-
-function renderList(){
-    const total = todos.length;
-
-    document.getElementById('stat-total').textContent = total;
-}
-
+// login con las credenciales de emilys
 async function loginEmily(){
     const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
@@ -65,16 +61,16 @@ async function loginEmily(){
     
     if (!res.ok) throw new Error(data.message || 'Usuario o password incorrectos.');
     
-    localStorage.setItem(TOKEN_KEY, data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
 }
-
+//mostrar error
 function showLogin(errorText = '') {
     profileSection.hidden = true;
     form.hidden = false;
     message.style.color = '#c0392b';
     message.textContent = errorText;
 }
-
+// mostrar perfil del user 
 function showProfile(user) {
     currentUserId = user.id;
     document.getElementById('profile-image').src = user.image;
@@ -88,9 +84,9 @@ function showProfile(user) {
     profileSection.hidden = false;
     loadTodos();
 }
-
+// cargar perfil de usuario
 async function loadProfile() {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem('accessToken');
 
     if (!token) {
         showLogin();
@@ -103,7 +99,7 @@ async function loadProfile() {
         });
 
         if (respuesta.status === 401) {
-            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem('accessToken');
             showLogin('Sesion expirada, has login de nuevo');
             return;
         }
@@ -118,7 +114,7 @@ async function loadProfile() {
         showLogin('No se pudo conectar con el servidor.');
     }
 }
-
+// escuchar el boton de login
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     message.textContent = '';
@@ -137,9 +133,9 @@ form.addEventListener('submit', async (event) => {
         button.textContent = 'Login';
     }
 });
-
+// escuchar el boton de logout
 logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('accessToken');
     currentUserId = null;
     showLogin();
 });

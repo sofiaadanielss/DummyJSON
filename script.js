@@ -6,7 +6,7 @@ const button = document.getElementById('loginBtn');
 const message = document.getElementById('message');
 const logoutBtn = document.getElementById('logoutBtn');
 const profileSection = document.getElementById('profileSection');
-
+let currentUserId = null;
 
 async function loginEmily(){
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -36,6 +36,7 @@ function showLogin(errorText = '') {
 }
 
 function showProfile(user) {
+    currentUserId = user.id;
     document.getElementById('profile-image').src = user.image;
     document.getElementById('profile-name').textContent = `${user.firstName} ${user.lastName}`;
     document.getElementById('profile-email').textContent = user.email;
@@ -98,6 +99,7 @@ form.addEventListener('submit', async (event) => {
 
 logoutBtn.addEventListener('click', () => {
     localStorage.removeItem(TOKEN_KEY);
+    currentUserId = null;
     showLogin();
 });
 
